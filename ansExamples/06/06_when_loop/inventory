@@ -1,0 +1,5 @@
+[webservers]
+web1
+
+[database_prod]
+ansible2.example.com

@@ -1,0 +1,26 @@
+---
+# tasks file for roles/apache
+- name: Install Packages - {{ pkg }}
+  yum:
+    name: "{{ pkg }}"
+    state: present
+
+- name: Configure Web Service - {{ indexfile }}
+  template:
+    src: index.html.j2
+    dest: "{{ indexfile }}"
+
+- name: Enable Services - httpd, firewalld
+  service:
+    name: "{{ item }}"
+    state: started
+    enabled: true
+  loop: "{{ svc }}"
+
+- name: Configure firewalld - http, https
+  firewalld:
+    service: "{{ item }}"
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ fw }}"

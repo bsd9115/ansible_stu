@@ -1,0 +1,21 @@
+---
+- name: Restore Custom_fact
+  hosts: webserver
+  vars:
+    remote_dir: /etc/ansible/facts.d
+    facts_file: custom.fact
+  tasks:
+    - name: Remove /etc/ansible/fact.d
+      file:
+        state: absent
+        path: "{{ remote_dir }}"
+
+    - name: Stopped Web Service
+      service:
+        name: httpd
+        state: stopped
+
+    - name: Remove Web Packages
+      yum:
+        name: httpd
+        state: absent

@@ -1,0 +1,40 @@
+---
+- name: Configure FTP server
+  hosts: test
+  gather_facts: false
+  tasks:
+    # Enabled Service - vsftpd, firewalld
+    # Configure Server - Access root (/etc/vsftpd/{ftpusers,user_list})
+    # Enabled Service - vsftpd, firewalld
+    # Permmanent Firewalld - ftp
+    - name: Enabled Service - vsftpd, firewalld
+      ansible.builtin.yum:
+        name:
+          - vsftpd, ftp, firewalld
+        state: present
+
+    - name: Configure Server - Access root (/etc/vsftpd/{ftpusers,user_list})
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        regexp: '^root'
+        line: '#root'
+      loop:
+        - /etc/vsftpd/ftpusers
+        - /etc/vsftpd/user_list
+
+    - name: Enabled Service - vsftpd, firewalld
+      ansible.builtin.service:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      loop:
+        - vsftpd
+        - firewalld
+
+    - name: Permmanent Firewalld - ftp
+      ansible.builtin.firewalld:
+        service: ftp
+        permanent: true
+        immediate: true
+        state: enabled
+        

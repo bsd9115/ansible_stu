@@ -1,0 +1,36 @@
+---
+- name: Webserver
+  hosts: all
+  tasks: 
+    - name: Install Packages
+      ansible.builtin.yum:
+        name:
+          - httpd
+          - mod_ssl
+          - firewalld
+        state: latest
+      
+    - name: Configure Web Service - /var/www/html/hello.html
+      ansible.builtin.copy:
+        content: "Hello world from {{ ansible_fqdn }}\n"
+        dest: /var/www/html/hello.html
+
+    - name: Enabled Services
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        - httpd
+        - firewalld
+
+    - name: Configure firewalld
+      ansible.builtin.firewalld:
+        service: "{{ item }}"
+        state: enabled
+        permanent: true
+        immediate: true
+      loop:
+        - http
+        - https
+

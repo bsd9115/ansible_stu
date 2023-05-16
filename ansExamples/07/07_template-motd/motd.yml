@@ -1,0 +1,14 @@
+---
+- name:
+  hosts: all
+  gather_facts: true
+  vars:
+    - system_owner: webmaster@example.com
+  tasks:
+    - name: Deploy /etc/motd file
+      ansible.builtin.template:
+        src: template/motd.j2
+        dest: /etc/motd
+        owner: root
+        group: root
+        mode: '0644'

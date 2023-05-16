@@ -1,0 +1,15 @@
+---
+- name: Blockinfile module
+  hosts: all
+  tasks:
+    - name: Add a block text to a file
+      ansible.builtin.blockinfile:
+        path: /home/devops/users.txt
+        block: |
+          1st line
+          2nd line
+          3
+          4
+          7 lines
+          blocks
+        state: present

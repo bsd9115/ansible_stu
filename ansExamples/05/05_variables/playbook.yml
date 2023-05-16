@@ -1,0 +1,61 @@
+---
+- name: Deploy and start Aapache HTTPD Service
+  hosts: webserver
+  vars_files: vars/vars.yml
+    # pkg_http: httpd
+    # pkg_https: mod_ssl
+    # pkg_py: python3-PyMySQL
+    # pkg_fw: firewalld
+    # svc_fw: firewalld
+    # svc_http: httpd
+    # fw_http: http
+    # fw_https: https
+
+  tasks:
+    # install Packages - httpd, mod_ssl, python3-PyMySQL, firewalld
+    # Configure Services - /var/www/html/index.html
+    # Enabled Services - firewalld, httpd
+    # permanent firewall - http, https
+    - name: Install Packages - {{ pkg_http }}, {{ pkg_https }}, {{ pkg_py }}, {{ pkg_fw }}
+      yum:
+        name:
+          - "{{ pkg_fw }}"
+          - "{{ pkg_http }}"
+          - "{{ pkg_https }}"
+          - "{{ pkg_py }}"
+        state: present
+
+    - name: Configure Services - /var/www/html/index.html
+      copy:
+        content: '<h1>WebServer Test Page</h1>HelloWorld!'
+        dest: /var/www/html/index.html
+
+    - name: Enabled Services - {{ svc_fw }}, {{ svc_http }}
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - "{{ svc_fw }}"
+        - "{{ svc_http }}"
+
+    - name: Permanent firewall - {{ fw_http }}, {{ fw_https }}
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop:
+        - "{{ fw_http }}"
+        - "{{ fw_https }}"
+
+- name: Check Web Services
+  hosts: localhost
+  tasks:
+    - name: Check WebPage
+      uri: 
+        url: http://web1.example.com
+        return_content: yes
+        status_code: 200
+      register: output
+    - debug: var=output

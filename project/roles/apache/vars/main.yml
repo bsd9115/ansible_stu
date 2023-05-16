@@ -1,0 +1,6 @@
+---
+# vars file for roles/apache
+pkg: [ httpd, mod_ssl, firewalld ]
+svc: [ httpd, firewalld ]
+fw: [ http, https ]
+indexfile: /var/www/html/index.html

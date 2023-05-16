@@ -1,0 +1,31 @@
+---
+- name:
+  hosts:
+  tasks:
+    - name: Disabled firewall
+      firewalld: 
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: disabled
+      loop:
+        - http
+        - https
+
+    - name: Remove Web Service
+      service:
+        name: "{{ item }}"
+        state: stopped
+      loop:
+        - firewalld
+        - httpd
+
+    - name: Remove Package
+      file:
+        path: /var/www/html/index.html
+        state: absent
+
+    - name: Remove User facts
+      file:
+        path: /etc/ansible/facts.dest
+        state: directory

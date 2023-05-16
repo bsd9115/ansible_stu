@@ -1,0 +1,37 @@
+---
+- name: Install database package
+  yum:
+    name: "{{ item }}"
+    state:  lastest
+  loop: "{{ db_package }}"
+  notify:
+    - start_db
+  tags:
+    - dev
+
+- name: Get small config file
+  get_url:
+    url: "{{ db_config_src_path_small }}"
+    dest: "{{ db_config_path }}"
+  when: db_confg_src_path_small id defined
+  notify:
+    - restart_db
+  tags:
+    - dev
+
+- name: Get Large Config file
+  get_url:
+    url: "{{ db_config_src_path_large }}"
+    dest: "{{ db_config_path }}"
+  when: db_config_src_path_large is defined
+  notify:
+    - restart_db
+  tags:
+    - prod
+
+- name: Update motd for development
+  copy:
+    content: "This is a production server"
+    dest: /etc/motd
+  tags:
+    - prod

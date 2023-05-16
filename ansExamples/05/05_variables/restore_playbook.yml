@@ -1,0 +1,40 @@
+---
+- name: Restore playbook.yml
+  hosts: all
+  vars_files: vars/vars.yml
+  tasks:
+    - name: Close the port firewall - {{ fw_http }}, {{ fw_https }}
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: disabled
+      ignore_errors: yes
+      loop:
+        - "{{fw_http}}"
+        - "{{fw_https}}"
+
+    - name: Remove the file - /var/www/html/index.html
+      file:
+        path: /var/www/html/index.html
+        state: absent
+
+    - name: Stop the service with service module - {{ svc_fw }}, {{ svc_http }}
+      service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+      loop:
+        - "{{ svc_fw }}"
+        - "{{ svc_http }}"
+
+    - name: Remove the Packages - {{ pkg_http }}, {{ pkg_https }}, {{ pkg_py }}, {{ pkg_fw }}
+      yum:
+        name:
+          - "{{ pkg_fw }}"
+          - "{{ pkg_http }}"
+          - "{{ pkg_https }}"
+          - "{{ pkg_py }}"
+        state: absent
+    

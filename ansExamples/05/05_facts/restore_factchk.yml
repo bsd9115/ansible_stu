@@ -1,0 +1,31 @@
+---
+- name: Restore factcheck.yml
+  hosts: all
+  tasks:
+    - name: Stopped web service
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: disabled
+      loop:
+        - http
+        - https
+
+    - name: Remove Web Service
+      service:
+        name: "{{ item }}"
+        state: stopped
+      loop:
+        - httpd
+        - firewalld
+
+    - name: Remove Web Packages
+      yum:
+        name:
+          - httpd
+          - firewalld
+          - mod_ssl
+        state: absent
+
+

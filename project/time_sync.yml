@@ -1,0 +1,9 @@
+---
+- name: Syncronization Tiem
+  hosts: all
+  roles:
+    - rhel-system-roles.timesync
+  vars:
+    timesync_ntp_servers:
+      - hostname: time.bora.net
+        iburst: true

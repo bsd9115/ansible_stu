@@ -1,0 +1,48 @@
+---
+- name: Setting WebServer
+  hosts: webservers
+  tasks:
+    - name: Create a Directory - /webdev
+      ansible.builtin.file:
+        path: /webdev
+        state: directory
+        group: apache
+        mode: '2755'
+        # 4755: SetUID 2755: SetGID, 1755: StickyBit
+        # mkdir: /webdev
+        # chgrp: apache /webdev
+        # chmod: 2775 /webdev (2755: rwxrxsr-x)
+
+    - name: Allow apache context - /webdev
+      ansible.builtin.sefcontext:
+        target: '/webdev(/.*)?'
+        setype: httpd_sys_content_t
+        state: present
+
+    - name: Apply new SELinux Context - /web/dev
+      ansible.builtin.command:
+        restorecon -irv /webdev
+
+    - name: Make a directory link
+      file:
+        src: /webdev 
+        dest: /var/www/html/webdev
+        state: link
+        owner: root
+        group: root
+
+    - name: Create a index.html - /webdev/index.html
+      ansible.builtin.lineinfile:
+        path: /webdev/index.html
+        line: "WEVSERVERS!!"
+        state: present
+        create: true
+
+- name: Test a web page
+  hosts: webservers
+  tasks:
+    - name: Test a web page - http://ansible3.example.com/webdev
+      uri: 
+        url: http://ansible3.example.com/webdev/
+        return_content: yes
+        status_code: 200

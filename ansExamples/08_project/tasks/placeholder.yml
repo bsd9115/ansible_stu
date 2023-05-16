@@ -1,0 +1,10 @@
+---
+- name: Create placeholder {{ indexfile }} file
+  copy:
+    content: "{{ ansible_facts['fqdn'] }} has been customized using Ansible.\n"
+    dest: "{{ file }}"
+
+- name: Copy File - {{ motdfile }}
+  copy:
+    content: "HELLO WORLD! - {{ ansible_facts['hostname']}}"
+    dest: "{{motdfile}}"

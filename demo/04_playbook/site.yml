@@ -1,0 +1,40 @@
+---
+- name: Install and start Apache HTTPD
+  hosts: webservers
+  tasks:
+    # yum install httpd(yum -y install httpd mod_ssl)
+    # set services(cp /files/index.html target:/var/www/html/index.html)
+    # run services(systemctl enable --now httpd)
+    # firewall add(firewall-cmd --permanent --add-service={http, https})
+    - name: Install the package - httpd, mod_ssl
+      yum:
+        name:
+          - httpd
+          - mod_ssl
+          - firewalld
+        state: present
+
+    - name: Configure the web service with httpd
+      copy:
+        src: files/index.html
+        dest: /var/www/html/index.html
+
+    - name: Start the web service
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - httpd
+        - firewalld
+
+    - name: Configure the firewall with firewall
+      firewalld:
+        service:  "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop:
+        - http
+        - https
+

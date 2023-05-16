@@ -1,0 +1,51 @@
+---
+# target system: webservers[ ansible3 / ansible4 ]
+# playbook: lv.yml
+# ----------------------------------------------------
+# vg: research
+# lv: date
+# lv: size: 500MiB
+# ----------------------------------------------------
+# fs: /dev/research/data (ext4)
+# ----------------------------------------------------
+# mount point: /mnt/research
+# /etc/fstab
+- name: Configure LVM
+  hosts: webservers
+  tasks:
+    - name:
+      ansible.builtin.parted:
+        device: /dev/sdb
+        number: 1
+        state: present
+        flags: [ lvm ]
+        part_start: 1MiB
+        part_end: 100%
+        fs_type: ext4
+      when: ansible_devices.sdb is defined
+    
+    - name: Configure [ PV, VG ]
+      lvg:
+        vg: vg1
+        pvs: /dev/sdb1
+      
+    - name: Configure LV
+      ansible.builtin.lvol:
+        vg: vg1
+        lv: data
+        size: 500
+      when: ansible_lvm.lvs.data is defined
+
+    - name: Configure FS
+      ansible.builtin.filesystem:
+        fstype: ext4
+        dev: /dev/vg1/data
+      when: ansible_lvm.lvs.data is defined
+
+    - name: Configure Mount
+      redhat.rhel_system_roles.mount:
+        src: /dev/vg1/data
+        path: /mnt/research
+        fstype: ext4
+        state:  mounted
+

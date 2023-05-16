@@ -1,0 +1,11 @@
+---
+- name: remove user account form all our servers
+  hosts: all
+  vars_files:
+    - secret.yml
+  tasks:
+    - name: Remove User1
+      user:
+        name: "{{ username }}"
+        state: absent
+        remove: yes

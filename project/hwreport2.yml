@@ -1,0 +1,21 @@
+---
+- name: Hardware Report
+  hosts: all
+  gather_facts: true
+  vars:
+    - hw_txt: /root/hwreport.txt
+    - hw_src: templates/hwreport.j2
+  # Copy Template - template/hwreport2.j2 -> /root/hwreport.txt
+  # Fetch report file - /root/hwreport.txt -> results/{{ inventory_hostname }}- 
+  tasks:
+    - name: Copy File - {{ hw_src }} -> {{ hw_txt }}
+      ansible.builtin.template:
+        src: "{{ hw_src }}"
+        dest: "{{ hw_txt }}"
+
+    - name: Fetch report File - {{ hw_txt }} -> results/{{ inventory_hostname }}-hwreport.txt
+      ansible.builtin.fetch:
+        src: "{{ hw_txt }}"
+        dest: results/{{ inventory_hostname }}-hwreport.txt
+        flat: true
+      

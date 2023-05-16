@@ -1,0 +1,29 @@
+---
+# tasks file for myvhost
+- name: DownLoad Packages - httpd
+  yum:
+    name: httpd
+    state:  latest
+
+- name: Enabled Services - httpd
+  service:
+    name: httpd
+    state: started
+    enabled: true
+
+- name: Configure Services - vhost.conf
+  template:
+    src: vhost.conf.j2
+    dest: /etc/httpd/conf.d/vhost.conf
+  notify: 
+    - restart httpd
+
+- name: Make Directory - /var/www/vhosts/{{ ansible_hostname }}
+  file:
+    path: "/var/www/vhosts/{{ ansible_hostname }}"
+    state: directory
+
+- name: Make File - /var/www/vhosts/{{ ansible_hostname }}/index.html
+  copy:
+    content: "HELLO WORLD - ansible1"
+    dest: "/var/www/vhosts/{{ ansible_hostname }}/index.html"

@@ -1,0 +1,69 @@
+---
+- name: Hardware Report
+  hosts: all
+  gather_facts: true
+  vars:
+    - hwtxt: /root/hwreport.txt
+    - hwemp: files/hwreport.empty
+  tasks:
+    - name: Copy File - {{ hwemp }} -> {{ hwtxt }}
+      ansible.builtin.copy:
+        src: "{{ hwemp }}"
+        dest: "{{ hwtxt }}"
+
+    - name: Lineinfile Values - inventory_hostname
+      ansible.builtin.lineinfile:
+        path: "{{ hwtxt }}"
+        regexp: '^HOST'
+        line: HOST={{ inventory_hostname }}
+        state: present
+
+    - name: Lineinfile Values - ansible_bios_version
+      ansible.builtin.lineinfile:
+        path: "{{ hwtxt }}"
+        regexp: '^BIOS'
+        line: BIOS={{ ansible_bios_version }}
+        state: present
+
+    - name: Lineinfile Values - ansible_memtotal_mb
+      ansible.builtin.lineinfile:
+        path: "{{ hwtxt }}"
+        regexp: '^MEMORY'
+        line: MEMORY={{ ansible_memtotal_mb }}
+        state: present
+
+    # - name: Lineinfile Values - sda disk size
+    #   ansible.builtin.lineinfile:
+    #     path: "{{ hwtxt }}"
+    #     regexp: '^SDA_DISK_SIZE'
+    #     line: |
+    #       {% if ansible_devices.sda is defined %}
+    #       SDA_DISK_SIZE={{ ansible_devices.sda.size }}
+    #       {% else %}
+    #       SDA_DISK_SIZE=NONE
+    #       {% endif %}
+    #     state: present
+
+    - name: Lineinfile Values - sdb disk size
+      ansible.builtin.lineinfile:
+        path: "{{ hwtxt }}"
+        regexp: '^SDB_DISK_SIZE'
+        line: |
+          {% if ansible_devices.sdb is defined %}
+          SDB_DISK_SIZE={{ ansible_devices.sdb.size }}
+          {% else %}
+          SDB_DISK_SIZE=NONE
+          {% endif %}
+        state: present
+
+    - name: Lineinfile Values - sdc disk size
+      ansible.builtin.lineinfile:
+        path: "{{ hwtxt }}"
+        regexp: '^SDC_DISK_SIZE'
+        line: |
+          {% if ansible_devices.sdc is defined %}
+          SDC_DISK_SIZE={{ ansible_devices.sdc.size }}
+          {% else %}
+          SDC_DISK_SIZE=NONE
+          {% endif %}
+        state: present

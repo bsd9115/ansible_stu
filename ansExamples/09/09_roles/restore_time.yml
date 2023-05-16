@@ -1,0 +1,11 @@
+---
+- name: Restore Configure time
+  hosts: all
+  gather_facts: false
+  pre_tasks:
+    - name: Configure timezone - Asia/Seoul
+      ansible.builtin.timezone:
+        name:
+          Asia/Seoul
+  roles:
+    - rhel-system-roles.timesync

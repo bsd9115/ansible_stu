@@ -1,0 +1,12 @@
+[dev]
+ansible1    ansible_ssh_host=192.168.10.11
+
+[test]
+ansible2    ansible_ssh_host=192.168.10.12
+
+[prod]
+ansible3    ansible_ssh_host=192.168.10.13
+ansible4    ansible_ssh_host=192.168.10.14
+
+[webservers:children]
+prod

@@ -1,0 +1,20 @@
+---
+- name: MariaDB server is running
+  hosts: database_dev
+  vars:
+    maria_packages:
+      - mariadb-server
+      - python3-PyMySQL
+  tasks:
+    - name: Install MariaDB Packages
+      yum:
+        # name: "{{ item }}"
+        name: httpd
+        state: present
+      # loop: "{{ maria_packages }}"
+
+    # - name: Start MariaDB service
+    #   service:
+    #     name: mariadb
+    #     state: started
+    #     enabled: true

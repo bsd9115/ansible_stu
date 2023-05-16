@@ -1,0 +1,20 @@
+---
+- name: Create facts_file
+  hosts: webserver
+  vars:
+    remote_dir: /etc/ansible/facts.d
+    facts_file: custom.fact
+  tasks:
+    # mkdir /etc/ansible/facts.d/
+    # custom.facts file 배포
+    - name: Create the remote directory
+      file:
+        state: directory
+        recurse: yes
+        path: "{{ remote_dir }}"
+        mode: '0755'
+    
+    - name: Install the new facts
+      copy:
+        src: "{{ facts_file }}"
+        dest: "{{ remote_dir }}"

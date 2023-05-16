@@ -1,0 +1,54 @@
+---
+- name: Configure Partition
+  hosts: webs
+  vars:
+    lvms:
+      - { lvname: lv1, lvsize: 500M }
+      - { lvname: lv2, lvsize: 1G }
+    fs:
+      - { fstype: ext4, dev: /dev/vg1/lv1 }
+      - { fstype: xfs, dev: /dev/vg1/lv2 }
+    mounts:
+      - { mountdir: /lv1, device: /dev/vg1/lv1, fstype: ext4 }
+      - { mountdir: /lv1, device: /dev/vg1/lv1, fstype: xfs }
+  tasks:
+    - name: Create a new ext4 primary Partition
+      parted:
+        device: "{{ item }}"
+        number: 1
+        flags: [ lvm ]
+        state: present
+        part_start: 1MiB
+        part_end: 100%
+      loop:
+        - /dev/sdb
+        - /dev/sdc
+
+    - name: LVM - LG
+      lvg:
+        vg: vg1
+        pvs: /dev/sdb1, /dev/sdc1
+
+    - name: LVM - LV
+      lvol:
+        vg: vg1
+        lv: "{{ item.lvname }}"
+        size: "{{ item.lvsize }}"
+      loop:
+        "{{ lvms }}"
+
+    - name: File System
+      filesystem:
+        fstype: "{{ item.fstype }}"
+        dev: "{{ item.dev }}"
+      loop:
+        "{{ fs }}"
+
+    - name: Mount
+      mount:
+        path: {{ item.mountdir }}
+        src: {{ item.device }}
+        fstype: {{ item.fstype }}
+        state: mounted
+      loop:
+        "{{ mounts }}"

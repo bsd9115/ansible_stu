@@ -1,0 +1,10 @@
+---
+- name: User Add
+  hosts: web2.example.com
+  vars_files:
+    - secret2.yml
+  tasks:
+    - name:  Add User "User1"
+      user:
+        name: "{{ username }}"
+        password: "{{ pwhash | password_hash('sha512') }}"

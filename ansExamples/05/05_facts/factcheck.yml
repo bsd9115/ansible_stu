@@ -1,0 +1,36 @@
+---
+- name: Configure firewall & WebServer
+  hosts: all
+  gather_facts: no
+  tasks:
+    - name: Install Packages - httpd, mod_ssl, firewall
+      yum: 
+        name:
+          - httpd
+          - firewalld
+          - mod_ssl
+        state: present
+
+    - name: Configure the web service with httpd
+      copy: 
+        src: /home/ansible/ansible/04_playbook/files
+        dest: /var/www/html/index.html
+
+    - name: Start the web service
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: yes
+      loop:
+        - httpd
+        - firewalld
+
+    - name: Configure the firewall with firewalld
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: enabled
+      loop:
+        - http
+        - https

@@ -1,0 +1,7 @@
+---
+- name: Restore parted_playbook.yml
+  hosts: all
+  vars:
+  tasks:
+    - name: Remove Directory
+    

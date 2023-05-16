@@ -1,0 +1,73 @@
+---
+- name: Job Control playbook
+  hosts: webservers
+  vars_files: vars/vars.yml
+  tasks:
+    - name: show failed System Requirements
+      fail:
+        msg: "The {{ inventory_hostname }} did not meet minimun require"
+      when:
+        (ansible_memtotal_mb < min_ram_mb) or
+        (ansible_distribution != "CentOS") 
+
+    - name: Install Packages
+      yum:
+        name: "{{ packages }}"
+        state: latest
+
+    - name: Start Services
+      service:
+        name: "{{ item }}"
+        state: started
+        enabled: true
+      loop:
+        "{{ services }}"
+
+
+    - name: BLOCK LINE
+      block:
+        - name: Make Directory - /etc/pki/tls/certs && /etc/pki/tls/private
+          file:
+            path: "{{ item }}"
+            state: directory
+          loop: 
+            "{{ ssl_dir }}"
+
+        - name: Copy TLS key
+          copy:
+            src: "{{ item.src }}"
+            dest: "{{ item.dest }}"
+          loop:
+            "{{ tls_cert_files }}"
+          notify: restart web service
+
+        - name: Copy files/index.html -> /var/www/html/index.html
+          copy:
+            src:  "{{ index_src }}"
+            dest: "{{ index_dest }}"
+      rescue:
+        - name: rescue line
+          debug:
+            msg: |
+              Error in lien Webserver
+              1) Failed to Make TLS Directory
+              2) Failed to Copy TLS file
+              3) Failed to Copy index.html
+
+
+    - name: Firewall
+      firewalld:
+        service: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: enabled
+      loop:
+        "{{ fw_svc }}"
+
+
+
+  handlers:
+    - name: restart web service
+      ansible.builtin.service:
+        name: "{{ svc_web }}"
+        state: restarted

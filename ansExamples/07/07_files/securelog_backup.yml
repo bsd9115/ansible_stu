@@ -1,0 +1,10 @@
+---
+- name: Fetch logs - /var/log/secure
+  hosts: all
+  tasks:
+    - name: Fetch modules
+      fetch:
+        src: /var/log/secure
+        dest: secure-backups
+        flat: no
+

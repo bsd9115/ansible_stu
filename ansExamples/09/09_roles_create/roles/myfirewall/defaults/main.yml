@@ -1,0 +1,3 @@
+---
+# defaults file for myfirewall
+fw_svc: ssh

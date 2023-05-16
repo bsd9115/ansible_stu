@@ -1,0 +1,12 @@
+---
+- name: remove user account form all our servers
+  hosts: all
+  vars_files:
+    - vars/secret.yml
+  tasks:
+    - name: Remove users from secret.yml
+      user:
+        name: "{{ item.name }}"
+        state: absent
+        remove: yes
+      with_items: "{{ newusers }}"

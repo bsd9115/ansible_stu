@@ -1,0 +1,19 @@
+---
+- name: Restore playbook.yml
+  hosts: all
+  vars_files: paths.yml
+  tasks:
+    - name: Remove Directory
+      file:
+        path: "{{ item }}"
+        state: absent
+        loop:
+          - "{{ paths.fileserver }}"
+          - "{{ paths.dbpath }}"
+
+    - name: Remove Packages - httpd, tomcat
+      yum:
+        name:
+          - httpd
+          - tomcat
+        state: absent

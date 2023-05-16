@@ -1,0 +1,4 @@
+- name: Configure Web Server With "Apache Roles"
+  hosts: webservers
+  roles:
+    - apache

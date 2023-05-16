@@ -1,0 +1,9 @@
+---
+- name: Add text to and existing files
+  hosts: all
+  tasks:
+    - name: Add a single line of text to a files
+      ansible.builtin.lineinfile:
+        path: /home/devops/users.txt
+        line: This line was added by lineinfile module
+        state: present

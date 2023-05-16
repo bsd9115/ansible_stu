@@ -1,0 +1,17 @@
+---
+- name: Restore
+  hosts: all 
+  tasks:
+    - name:
+      ansible.builtin.service:
+        name: postfix
+        state: stopped
+        enabled: false
+      ignore_errors: true
+
+    - name:
+      ansible.builtin.yum:
+        name:
+          - postfix
+          - dovecot
+        state: absent

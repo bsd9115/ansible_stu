@@ -1,0 +1,25 @@
+---
+- name: Configure RunLevel
+  hosts: dev
+  vars:
+    run3: graphical.target
+    run5: multi-user.target
+  tasks:
+    # Change default target BOOT
+    # systemctl set-default graphical.target
+    # CMD
+    # systemtcl isolate graphical.target
+    - name: Change default target BOOT - Delete file
+      ansible.builtin.file:
+        path: /etc/systemd/system/default.target
+        state: absent
+
+    - name: Change default target BOOT - Create Symbolic file link
+      ansible.builtin.file:
+        src: /usr/lib/systemd/system/{{ run5 }}
+        dest: /etc/systemd/system/default.target
+        state: link
+
+    - name: CMD
+      ansible.builtin.command:
+        systemctl isolate {{ run5 }}

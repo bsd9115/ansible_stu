@@ -1,0 +1,13 @@
+---
+- name: MariaDB server is running
+  hosts: webservers
+  tasks:
+    - name: Install httpd
+      yum:
+        name: httpd
+        state: present
+
+    - name: Remove httpd
+      yum: 
+        name: httpd
+        state: absent

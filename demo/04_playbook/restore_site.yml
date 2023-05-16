@@ -1,0 +1,36 @@
+---
+- name: restore the site.yml
+  hosts: webservers
+  tasks:
+    # firewalld - http, https
+    # service - httpd
+    # /var/www/html/index.html
+    # httpd, mod_ssl
+    - name: disable firewall - http, https
+      firewalld:
+        service: "{{ item }}"
+        permanent: yes
+        immediate: yes
+        state: disabled
+      loop:
+        - http
+        - https
+
+    - name: disabled Web service - httpd
+      service:
+        name: httpd
+        state: stopped
+        enabled: no
+
+    - name: file delete - /var/www/html/index.html
+      file:
+        path: /var/www/html/index.html
+        state: absent
+
+    - name: httpd package delete - httpd, mod_ssl
+      yum:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - httpd
+        - mod_ssl

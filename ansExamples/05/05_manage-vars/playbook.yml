@@ -1,0 +1,22 @@
+---
+- name: Configure lamp
+  hosts: lamp
+  vars:
+    firewall: firewalld
+  tasks:
+    - name: include vars
+      include_vars: vars/main.yml
+
+    - name: include tasks
+      include_tasks: tasks/main.yml
+
+    - name: Install Lastest firewall
+      yum:
+        name: "{{ firewall }}"
+        state: latest
+
+    - name: Enable firewall
+      service:
+        name: "{{ firewall }}"
+        state: started
+        enabled: yes

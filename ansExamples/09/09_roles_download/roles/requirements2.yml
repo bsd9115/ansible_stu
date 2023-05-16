@@ -1,0 +1,3 @@
+# From a webserver, where the role is packaged in a gzipped tar achive
+- name: installgit
+  src: https://ansible.example.com/installgit.tgz

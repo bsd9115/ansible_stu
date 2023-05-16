@@ -1,0 +1,27 @@
+---
+- name: Install postfix
+  yum:
+    name: postfix
+    state: latest
+  notify:
+    - start_postfix
+  tags:
+    - server
+
+- name: Install dovecot
+  yum:
+    name: dovecot
+    state:  latest
+  notify:
+    - start_dovecot
+  tags:
+    - client
+
+- name: Download main.cf Configuration
+  get_url:
+    url: http://192.168.10.10/main.cf
+    dest: /etc/postfix/main.cf
+  notify:
+    - restart_postfix
+  tags:
+    - server

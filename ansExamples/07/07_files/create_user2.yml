@@ -1,0 +1,26 @@
+---
+- name: User Add
+  hosts: all
+  vars_files:
+    - secret2.yml
+  tasks:
+    - name:  Add User "devops"
+      user:
+        name: "{{ username }}"
+        password: "{{ pwhash | password_hash('sha512') }}"
+
+    - name: Copy /etc/sudoers.d/devops
+      ansible.builtin.copy:
+        src: files/devops
+        dest: /etc/sudoers.d/devops
+        owner: root
+        group: root
+        mode: '0440'
+
+    - name: $HOME/.ssh/authorized_keys ds
+      ansible.builtin.authorized_key:
+        user: devops
+        state: present
+        key: "{{ item }}"
+      with_file: 
+        - ~/.ssh/id_rsa.pub

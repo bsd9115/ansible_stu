@@ -1,0 +1,21 @@
+---
+- name:
+  hosts: all
+  tasks:
+    - name: /etc/motd
+      ansible.builtin.shell:
+        "> /etc/motd"
+      
+    - name: Disabled DB service
+      ansible.builtin.service:
+        name: mariadb
+        state: stopped
+        enabled: no
+      ignore_errors: true
+
+    - name: Remove DB service
+      ansible.builtin.yum:
+        name:
+          - python3-PyMySQL
+          - mariadb-server
+        state: absent

@@ -1,0 +1,13 @@
+---
+- name: Configure /etc/issue file
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Make File - /etc/issue
+      ansible.builtin.template:
+        src: issue.j2
+        dest: /etc/issue
+        owner: root
+        group: root
+        mode: '0644'
+        

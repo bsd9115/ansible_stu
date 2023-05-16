@@ -1,0 +1,34 @@
+---
+- name:
+  hosts: webservers
+  vars_files: vars/vars.yml
+  tasks:
+    - name: Disabled Firewalld
+      ansible.builtin.firewalld:
+        service: "{{ item }}"
+        permanent: true
+        immediate: true
+        state: disabled
+      loop:
+        "{{ fw_svc }}"
+
+    - name: Remove /var/www/html/index.html
+      file:
+        path: "{{ item }}"
+        state: absent
+      loop:
+        "{{ rm_files }}"
+
+    - name: Disabled Services
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: false
+      loop:
+        "{{ services }}"
+
+    - name: Remove Packages
+      ansible.builtin.yum:
+        name: "{{ packages }}"
+        state: absent
+

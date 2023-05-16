@@ -1,0 +1,43 @@
+---
+- name: HardWare Reports
+  hosts: all
+  gather_facts: yes
+  vars:
+    hwreport: /root/hwreport.txt
+  tasks:
+    - name: Copy hwreport.txt to {{ hwreport }}
+      copy:
+        src: files/hwreport.txt
+        dest: "{{ hwreport }}"
+        owner: root
+        group: root
+        mode: '600'
+
+
+    - name: Update hwreport.txt with Gathering Facts (inventoryhostname)
+      replace:
+        path: "{{ hwreport }}"
+        regexp: 'inventoryhostname'
+        replace: "{{ ansible_hostname }}"
+    - name: Update hwreport.txt with Gathering Facts (totalmem)
+      replace:
+        path: "{{ hwreport }}"
+        regexp: 'totalmem'
+        replace: "{{ ansible_memtotal_mb }}"
+    - name: Update hwreport.txt with Gathering Facts (biosversion)
+      replace:
+        path: "{{ hwreport }}"
+        regexp: 'biosversion'
+        replace: "{{ ansible_bios_version }}"
+    - name: Update hwreport.txt with Gathering Facts (sdasize)
+      replace:
+        path: "{{ hwreport }}"
+        regexp: 'sdasize'
+        replace: "{{ ansible_devices.sda.size }}"
+
+
+    - name: Gathering hwreport
+      fetch:
+        src: "{{ hwreport }}"
+        dest: "results/result-{{ inventory_hostname }}"
+        flat: yes

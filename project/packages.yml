@@ -1,0 +1,28 @@
+---
+- name: Install epel-release Packages
+  hosts: all
+  tasks:
+    - name: Install Packages - epel-release
+      ansible.builtin.yum:
+        name: epel-release
+        state: present
+
+- name: Install Package
+  hosts: dev,test,prod
+  tasks:
+    - name: Install Packages - php, mariadb-server
+      ansible.builtin.yum:
+        name:
+          - php
+          - mariadb-server
+        state: present
+
+    - name: Install Package - htop, @Development tools
+      ansible.builtin.yum:
+        name: 
+          - htop
+          - "@Development tools"
+        state: present
+      vars:
+        dev: dev
+      when: dev in group_names

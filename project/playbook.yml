@@ -1,0 +1,27 @@
+---
+- name: Install packages
+  import_playbook: packages.yml
+
+- name: Syncronization Time
+  ansible.builtin.import_playbook:
+    time_sync.yml
+
+- name: Configure Webserver
+  ansible.builtin.import_playbook:
+    webservers.yml
+
+- name: Configure /etc/hosts
+  ansible.builtin.import_playbook:
+    hosts.yml
+
+- name: Configure cronjob
+  ansible.builtin.import_playbook:
+    cronjob.yml
+
+# - name: yum Repository
+#   ansible.builtin.gather_facts:
+#     false
+#   hosts: all
+#   tasks:
+#     - ansible.builtin.command:
+#         adhoc.sh

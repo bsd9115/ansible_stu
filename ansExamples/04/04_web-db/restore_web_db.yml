@@ -1,0 +1,44 @@
+---
+- name: Restore the web_db.yml
+  hosts: all
+  tasks:
+    # Close the port with firewalld module - http, https
+    # Remove the file - /var/www/html/index.html
+    # Stop the service with service module - httpd, mariadb
+    # Remove the Packages - Web(httpd, php, php-mysqlnd, php-pdo), db(mariadb-server), firewall(firewalld)
+    - name: Close the port firewall - http, https
+      firewalld:
+        service: "{{ item }}"
+        permanent:  yes
+        immediate:  yes
+        state:  disabled
+      loop:
+        - http
+        - https
+
+    - name: Remove the file - /var/www/html/index.php
+      file:
+        path: /var/www/html/index.php
+        state: absent
+
+    - name: Stop the service with service module - httpd, mariadb
+      service:
+        name: "{{ item }}"
+        state: stopped
+        enabled: no
+      ignore_errors: yes
+      loop:
+        - mariadb
+        - httpd
+
+    - name: Remove the Packages - Web(httpd, php, php-mysqlnd, php-pdo), db(mariadb-server), firewall(firewalld)
+      yum:
+        name:
+          - httpd
+          - mod_ssl
+          - php
+          - php-mysqlnd
+          - php-pdo
+          - mariadb-server
+          - firewalld
+        state: absent
